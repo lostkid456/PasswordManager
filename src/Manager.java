@@ -25,21 +25,41 @@ public class Manager {
                     1.) Create a new password (Enter C/c)
                     2.) Find all sites and passwords related to your account (Enter A/a)
                     3.) Find the password for a site (Enter F/f)
-                    4.) Quit (Enter Q/q)""");
+                    4.) Replace a password for a site (Enter R/r)
+                    5.) Quit (Enter Q/q)""");
             String input=inp.next().toUpperCase();
             if(input.equals("C")){
                 System.out.println("Enter the site you want to create a new password for.");
                 String site=inp.next();
                 System.out.println("Enter the length for your new password");
                 int length=inp.nextInt();
-                System.out.println("Enter a keyphrase for your password");
-                String keyphrase=inp.next();
+                System.out.println("Enter the key phrase for your new password");
+                inp.nextLine();
+                String keyphrase = inp.nextLine();
                 createPassword(connect,c,site,keyphrase,length);
             }else if(input.equals("A")){
-                System.out.println(printAll());
+                System.out.println(printAll(c,connect));
             }else if(input.equals("F")){
                 System.out.println("Enter the site you want the password for:");
-            }else if(input.equals("Q")){
+                String in=inp.next();
+                printSpecific(c,connect,in);
+            }else if(input.equals("R")){
+                try {
+                    System.out.println("Enter the site you want to create a new password for.");
+                    String site=inp.next();
+                    System.out.println("Enter the length for your new password");
+                    int length=inp.nextInt();
+                    System.out.println("Enter the key phrase for your new password");
+                    inp.nextLine();
+                    String keyphrase = inp.nextLine();
+                    String password = generatePassword(keyphrase,length);
+                    connect.replacePassword(c,site,password);
+                    System.out.println("Password has been replaced to "+password);
+                }catch(SQLException e){
+                    System.out.println("Site is not found");
+                }
+            }
+            else if(input.equals("Q")){
                 c.close();
                 System.exit(1);
             }else{
@@ -51,10 +71,13 @@ public class Manager {
     static String generatePassword(String keyphrase,int length){
         if(length<12){
             System.out.println("The password must be longer in length");
+            Scanner inp=new Scanner(System.in);
+            int len=inp.nextInt();
+            return generatePassword(keyphrase,len);
         }
         StringBuilder password=new StringBuilder();
         String special_characters=" !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-        String all_Letters=keyphrase+special_characters;
+        String all_Letters=keyphrase.replace(" ","");
         for(int i=0;i<keyphrase.length();i++){
             if(Character.isUpperCase(keyphrase.charAt(i))){
                 all_Letters+=Character.toLowerCase(keyphrase.charAt(i));
@@ -63,33 +86,47 @@ public class Manager {
                 all_Letters+=Character.toUpperCase(keyphrase.charAt(i));
             }
         }
+        all_Letters=all_Letters.replace(" ", "");
         SecureRandom rand = new SecureRandom();
         int capital_counter=0;
         int special_char_counter=0;
         for(int i=0;i<length-1;i++){
-            int random_index=rand.nextInt(all_Letters.length());
-            char random_char=all_Letters.charAt(random_index);
-            String rc=all_Letters.substring(random_index,random_index+1);
-            if(Character.isUpperCase(random_char)){
-                capital_counter++;
-            }
-            if(special_characters.contains(rc)){
+            int choose=rand.nextInt(2);
+            if(choose==1){
+                int index=rand.nextInt(all_Letters.length());
+                char letter=all_Letters.charAt(index);
+                if(Character.isUpperCase(letter)){
+                    capital_counter++;
+                }
+                password.append(letter);
+            }else{
+                int index=rand.nextInt(special_characters.length());
+                char specialChar=special_characters.charAt(index);
+                password.append(specialChar);
                 special_char_counter++;
             }
-            password.append(random_char);
         }
-        if(capital_counter<1){
-            int random_index=rand.nextInt(keyphrase.length());
-            char random_char=keyphrase.charAt(random_index);
-            password.append(Character.toUpperCase(random_char));
-        } else if(special_char_counter<1){
-            int random_index=rand.nextInt(special_characters.length());
-            char random_char=special_characters.charAt(random_index);
-            password.append(random_char);
-        }else{
-            int random_index=rand.nextInt(all_Letters.length());
-            char random_char=all_Letters.charAt(random_index);
-            password.append(random_char);
+        if (capital_counter<1){
+            int index=rand.nextInt(special_characters.length());
+            char specialChar=all_Letters.charAt(index);
+            password.append(specialChar);
+        }
+        if(special_char_counter<1){
+            int index=rand.nextInt(all_Letters.length());
+            char letter=special_characters.charAt(index);
+            password.append(Character.toUpperCase(letter));
+        }
+        while(password.length() < length){
+            int choose=rand.nextInt(2);
+            if(choose==0){
+                int index=rand.nextInt(all_Letters.length());
+                char letter=all_Letters.charAt(index);
+                password.append(letter);
+            }else{
+                int index=rand.nextInt(special_characters.length());
+                char specialChar=special_characters.charAt(index);
+                password.append(specialChar);
+            }
         }
         return password.toString();
     }
@@ -99,25 +136,22 @@ public class Manager {
             connect.addPassword(c,site,generatePassword(keyphrase, length));
             System.out.println("Successfully entered it in");
         }catch(SQLException e){
-            System.out.println(e.getMessage());
-            System.out.println(e.getErrorCode());
             System.out.println("The site you want to create a password for already exists");
-            System.out.println("Maybe you want to replace the password that you already made. Yes(Y/y) or " +
-                    "No(Anything else but Y/y) ?");
-            Scanner inp=new Scanner(System.in);
-            String input = inp.next();
-            if(input.equalsIgnoreCase("Y")){
-                String password=generatePassword(keyphrase,length);
-                connect.replacePassword(c,site,password);
-                System.out.println("Password has been replaced");
-            }
         }
     }
 
-    static String printAll(){
-        String str = "";
-        return str;
+    static String printAll(Connection connection,MySQLConnect connect) throws SQLException {
+        return "Site       Password\n"+connect.printAll(connection);
     }
+
+    static void printSpecific(Connection connection,MySQLConnect connect,String site){
+        try{
+            System.out.println(connect.printSite(connection,site));
+        } catch (SQLException throwables) {
+            System.out.println("Site not found\n");
+        }
+    }
+
 
 
 }

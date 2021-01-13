@@ -25,8 +25,8 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62">
-        <schema name="password" object-types="view, table" />
-        <schema name="test" object-types="view, table" />
+        <schema name="password" object-types="table, function, index, column, view, constraint, dataset trigger, procedure" />
+        <schema name="test" object-types="table, view" />
       </connection>
     </loaded-nodes>
   </component>
@@ -36,7 +36,9 @@
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62" object-ref="schemas/password/tables/sites" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62" />
@@ -99,7 +101,7 @@
           <deprecated-pwd value="IVdoYXRpc3RoZW1lYW5pbmdvZmxpZmUxMjM=" />
         </database>
         <properties>
-          <auto-commit value="false" />
+          <auto-commit value="true" />
         </properties>
         <ssh-settings>
           <active value="false" />
