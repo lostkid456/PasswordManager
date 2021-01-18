@@ -38,12 +38,12 @@ class MySQLConnect {
         if(!checkSiteExists(connection, site)){
             throw new SQLException();
         }
-        String pass= findPassword(connection,site);
+        String pass= findPassword(connection,site)[0];
         System.out.println(pass);
-        PreparedStatement query = connection.prepareStatement("update sites set Password=replace(?,?,?)");
-        query.setString(1,"Password");
-        query.setString(2,pass);
-        query.setString(3,generatePassword);
+        PreparedStatement query = connection.prepareStatement("update sites set password=replace(password,?,?) where ID=?");
+        query.setString(1,pass);
+        query.setString(2,generatePassword);
+        query.setInt(3, Integer.parseInt(findPassword(connection,site)[1]));
         query.executeUpdate();
 
     }
@@ -61,27 +61,28 @@ class MySQLConnect {
     String printSite(Connection connection,String site) throws SQLException {
         Statement query = connection.createStatement();
         ResultSet rs = query.executeQuery("SELECT * FROM sites");
-        String str="\nSite       Password\n";
+        String str="\n--------------------------------------------------------------------------------------------------------------------" +
+                "\nSite       Password\n--------------------------------------------------------------------------------" +
+                "------------------------------------\n";
         while (rs.next()) {
             if(rs.getString("Site").equalsIgnoreCase(site)) {
-                str += rs.getString("Site") + "     " + rs.getString("Password") + "\n";
-                return str;
+                str += rs.getString("Site") + "       " + rs.getString("Password") + "\n";
+                return str+"--------------------------------------------------------------------------------------------------------------------\n";
             }
         }
         throw new SQLException();
     }
 
-    String findPassword(Connection connection, String site) throws SQLException {
+    String[] findPassword(Connection connection, String site) throws SQLException {
         Statement query = connection.createStatement();
         ResultSet rs = query.executeQuery("SELECT * FROM sites");
-        String pass="";
         while(rs.next()){
             String s=rs.getString("Site");
             if(s.equalsIgnoreCase(site)){
-                return rs.getString("Password");
+                return new String[]{rs.getString("Password"),Integer.toString(rs.getInt("ID"))};
             }
         }
-        return pass;
+        throw new SQLException();
     }
 
 }

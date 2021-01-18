@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62">
-        <schema name="password" object-types="table, function, index, column, view, constraint, dataset trigger, procedure" />
+        <schema name="password" object-types="procedure, function, table, view" />
         <schema name="test" object-types="table, view" />
       </connection>
     </loaded-nodes>
@@ -36,9 +36,7 @@
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62" object-ref="schemas/password/tables/sites" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62" />

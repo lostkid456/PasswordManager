@@ -36,7 +36,7 @@ public class Manager {
                 System.out.println("Enter the key phrase for your new password");
                 inp.nextLine();
                 String keyphrase = inp.nextLine();
-                createPassword(connect,c,site,keyphrase,length);
+                createPassword(connect,c,(site.substring(0,1).toUpperCase())+site.substring(1),keyphrase,length);
             }else if(input.equals("A")){
                 System.out.println(printAll(c,connect));
             }else if(input.equals("F")){
@@ -69,8 +69,8 @@ public class Manager {
     }
 
     static String generatePassword(String keyphrase,int length){
-        if(length<12){
-            System.out.println("The password must be longer in length");
+        if(length<12 || length>60){
+            System.out.println("The password must be longer than 12 and less than 60 characters in length");
             Scanner inp=new Scanner(System.in);
             int len=inp.nextInt();
             return generatePassword(keyphrase,len);
@@ -131,7 +131,7 @@ public class Manager {
         return password.toString();
     }
 
-    static void createPassword(MySQLConnect connect,Connection c,String site,String keyphrase,int length) throws SQLException {
+    static void createPassword(MySQLConnect connect,Connection c,String site,String keyphrase,int length)  {
         try{
             connect.addPassword(c,site,generatePassword(keyphrase, length));
             System.out.println("Successfully entered it in");
@@ -141,17 +141,17 @@ public class Manager {
     }
 
     static String printAll(Connection connection,MySQLConnect connect) throws SQLException {
-        return "Site       Password\n"+connect.printAll(connection);
+        return "\n------------------------------------------------------------------------------------------------------" +
+                "--------------\nSite       Password\n------------------------------------------------------------------" +
+                "--------------------------------------------------\n"+connect.printAll(connection)+"-------------------" +
+                "-------------------------------------------------------------------------------------------------\n";
     }
 
     static void printSpecific(Connection connection,MySQLConnect connect,String site){
         try{
             System.out.println(connect.printSite(connection,site));
-        } catch (SQLException throwables) {
+        } catch (SQLException throwable) {
             System.out.println("Site not found\n");
         }
     }
-
-
-
 }
