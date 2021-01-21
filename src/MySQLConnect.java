@@ -53,7 +53,7 @@ class MySQLConnect {
         ResultSet rs = query.executeQuery("SELECT * FROM sites");
         String str="";
         while (rs.next()) {
-            str+=rs.getString("Site")+"     "+rs.getString("Password")+"\n";
+            str+=rs.getString("Site")+"   ||"+rs.getString("Password")+"\n";
         }
         return str;
     }
@@ -66,7 +66,7 @@ class MySQLConnect {
                 "------------------------------------\n";
         while (rs.next()) {
             if(rs.getString("Site").equalsIgnoreCase(site)) {
-                str += rs.getString("Site") + "       " + rs.getString("Password") + "\n";
+                str += rs.getString("Site") + "       ||" + rs.getString("Password") + "\n";
                 return str+"--------------------------------------------------------------------------------------------------------------------\n";
             }
         }

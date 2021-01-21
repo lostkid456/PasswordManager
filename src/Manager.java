@@ -69,14 +69,15 @@ public class Manager {
     }
 
     static String generatePassword(String keyphrase,int length){
-        if(length<12 || length>60){
-            System.out.println("The password must be longer than 12 and less than 60 characters in length");
+        if(length<12 || length>47){
+            System.out.println("The password must be longer than 12 and less than 47 characters in length. Enter a new length");
             Scanner inp=new Scanner(System.in);
             int len=inp.nextInt();
             return generatePassword(keyphrase,len);
         }
         StringBuilder password=new StringBuilder();
         String special_characters=" !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+        String numbers="0123456789";
         String all_Letters=keyphrase.replace(" ","");
         for(int i=0;i<keyphrase.length();i++){
             if(Character.isUpperCase(keyphrase.charAt(i))){
@@ -90,8 +91,9 @@ public class Manager {
         SecureRandom rand = new SecureRandom();
         int capital_counter=0;
         int special_char_counter=0;
-        for(int i=0;i<length-1;i++){
-            int choose=rand.nextInt(2);
+        int number_counter=0;
+        for(int i=0;i<length-3;i++){
+            int choose=rand.nextInt(3);
             if(choose==1){
                 int index=rand.nextInt(all_Letters.length());
                 char letter=all_Letters.charAt(index);
@@ -99,33 +101,52 @@ public class Manager {
                     capital_counter++;
                 }
                 password.append(letter);
-            }else{
+            }if(choose==2){
                 int index=rand.nextInt(special_characters.length());
                 char specialChar=special_characters.charAt(index);
                 password.append(specialChar);
                 special_char_counter++;
+            }else{
+                int index=rand.nextInt(numbers.length());
+                char number=numbers.charAt(index);
+                password.append(number);
+                number_counter++;
             }
         }
-        if (capital_counter<1){
+        if (special_char_counter<1){
             int index=rand.nextInt(special_characters.length());
-            char specialChar=all_Letters.charAt(index);
+            char specialChar=special_characters.charAt(index);
             password.append(specialChar);
         }
-        if(special_char_counter<1){
+        if(capital_counter<1){
             int index=rand.nextInt(all_Letters.length());
-            char letter=special_characters.charAt(index);
+            char letter=all_Letters.charAt(index);
             password.append(Character.toUpperCase(letter));
         }
+        if(number_counter<1){
+            int index=rand.nextInt(numbers.length());
+            char number=numbers.charAt(index);
+            password.append(number);
+        }
         while(password.length() < length){
-            int choose=rand.nextInt(2);
-            if(choose==0){
+            int choose=rand.nextInt(3);
+            if(choose==1){
                 int index=rand.nextInt(all_Letters.length());
                 char letter=all_Letters.charAt(index);
+                if(Character.isUpperCase(letter)){
+                    capital_counter++;
+                }
                 password.append(letter);
-            }else{
+            }if(choose==0){
                 int index=rand.nextInt(special_characters.length());
                 char specialChar=special_characters.charAt(index);
                 password.append(specialChar);
+                special_char_counter++;
+            }else{
+                int index=rand.nextInt(numbers.length());
+                char number=numbers.charAt(index);
+                password.append(number);
+                number_counter++;
             }
         }
         return password.toString();

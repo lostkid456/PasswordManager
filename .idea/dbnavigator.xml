@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="49c8f428-13c8-4d3a-8695-ebd1d0c41b62">
-        <schema name="password" object-types="procedure, function, table, view" />
+        <schema name="password" object-types="table, view" />
         <schema name="test" object-types="table, view" />
       </connection>
     </loaded-nodes>
